@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>S.A.M.I. — نظام المساعدة الطبية الذكي</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0a0f1c">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+:root{--bg-deep:#050810;--bg-primary:#0a0f1c;--bg-card:#111827;--bg-elevated:#1a2236;--bg-input:#0d1425;--accent:#00d4aa;--accent-glow:rgba(0,212,170,.15);--accent-dim:#00a88a;--danger:#ff4757;--danger-glow:rgba(255,71,87,.15);--warning:#ffa502;--warning-glow:rgba(255,165,2,.15);--text:#e8eaf6;--text-secondary:#8892b0;--text-muted:#5a6484;--border:rgba(255,255,255,.06);--border-active:rgba(0,212,170,.3);--glass:rgba(17,24,39,.8);--radius:16px;--radius-sm:10px;--radius-xs:6px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'IBM Plex Sans Arabic','Plus Jakarta Sans',sans-serif;background:var(--bg-deep);color:var(--text);min-height:100dvh;overflow:hidden;position:relative}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 20%,rgba(0,212,170,.04) 0%,transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(55,66,250,.03) 0%,transparent 50%);animation:af 20s ease infinite;pointer-events:none;z-index:0}
+@keyframes af{0%,100%{transform:translate(0,0)}33%{transform:translate(2%,-1%)}66%{transform:translate(-1%,2%)}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--text-muted);border-radius:4px}
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;background:var(--bg-primary);border-left:1px solid var(--border);border-right:1px solid var(--border)}
+.screen{display:none;flex-direction:column;height:100%}.screen.active{display:flex}
+.header{padding:.8rem 1rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid var(--border);background:var(--glass);backdrop-filter:blur(20px);flex-shrink:0}
+.header-back{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:all .2s}
+.header-back:hover{background:var(--bg-elevated);border-color:var(--border-active)}
+.header-info{flex:1}.header-title{font-size:.95rem;font-weight:700;font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em}
+.header-subtitle{font-size:.7rem;color:var(--text-muted);margin-top:.1rem}
+.header-badge{display:flex;align-items:center;gap:.3rem;padding:.3rem .6rem;background:var(--accent-glow);color:var(--accent);border-radius:20px;font-size:.65rem;font-weight:600}
+.header-badge::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.welcome{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;gap:1.5rem}
+.welcome-logo{width:100px;height:100px;background:linear-gradient(135deg,var(--accent),#3742fa);border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;box-shadow:0 0 60px rgba(0,212,170,.2);animation:lf 4s ease infinite}
+@keyframes lf{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.welcome h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:2.2rem;font-weight:800;letter-spacing:-.03em;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.welcome h1 span{display:block;font-size:.8rem;font-weight:400;letter-spacing:.15em;text-transform:uppercase;-webkit-text-fill-color:var(--text-secondary);margin-top:.3rem}
+.welcome-desc{font-size:.85rem;color:var(--text-secondary);line-height:1.7;max-width:320px}
+.welcome-features{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.feature-chip{display:flex;align-items:center;gap:.4rem;padding:.5rem .9rem;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;font-size:.75rem;color:var(--text-secondary)}
+.feature-chip .icon{font-size:1rem}
+.btn-primary{width:100%;max-width:300px;padding:.9rem;background:linear-gradient(135deg,var(--accent),var(--accent-dim));color:var(--bg-deep);border:none;border-radius:var(--radius-sm);font-family:inherit;font-size:.95rem;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 4px 20px rgba(0,212,170,.3)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,212,170,.4)}
+.btn-secondary{padding:.6rem 1.2rem;background:var(--bg-card);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:.8rem;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-secondary:hover{border-color:var(--border-active);background:var(--bg-elevated)}
+.patient-screen{flex:1;padding:1.2rem;overflow-y:auto}
+.section-label{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:.6rem}
+.patient-cards{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.5rem}
+.patient-card{display:flex;align-items:center;gap:.8rem;padding:.8rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:all .2s}
+.patient-card:hover,.patient-card.selected{border-color:var(--accent);background:var(--bg-elevated);box-shadow:0 0 20px var(--accent-glow)}
+.patient-avatar{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#3742fa);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;color:#fff;flex-shrink:0}
+.patient-info{flex:1}.patient-name{font-size:.9rem;font-weight:600}
+.patient-meta{font-size:.72rem;color:var(--text-muted);margin-top:.15rem}
+.divider{display:flex;align-items:center;gap:.6rem;margin:1rem 0;color:var(--text-muted);font-size:.7rem}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.input-group{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1rem}
+.input-field{width:100%;padding:.75rem 1rem;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-xs);color:var(--text);font-family:inherit;font-size:.85rem;transition:border-color .2s;outline:none}
+.input-field:focus{border-color:var(--accent)}
+.input-field::placeholder{color:var(--text-muted)}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+select.input-field{appearance:none}
+.chat-container{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.8rem}
+.msg{max-width:85%;display:flex;flex-direction:column;gap:.3rem;animation:mi .3s ease}
+@keyframes mi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.msg-bot{align-self:flex-start}.msg-user{align-self:flex-end}
+.msg-sender{font-size:.65rem;font-weight:600;color:var(--text-muted);padding:0 .3rem}
+.msg-bubble{padding:.75rem 1rem;border-radius:var(--radius);line-height:1.6;font-size:.88rem}
+.msg-bot .msg-bubble{background:var(--bg-card);border:1px solid var(--border);border-top-right-radius:var(--radius-xs)}
+.msg-user .msg-bubble{background:linear-gradient(135deg,var(--accent),var(--accent-dim));color:var(--bg-deep);border-bottom-left-radius:var(--radius-xs)}
+.msg-darija{font-size:1rem;margin-bottom:.25rem}
+.msg-translation{font-size:.78rem;opacity:.65;font-style:italic}
+.msg-symptoms{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+.symptom-tag{padding:.25rem .6rem;background:var(--accent-glow);color:var(--accent);border-radius:12px;font-size:.7rem;font-weight:600}
+.msg-quick-replies{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+.quick-reply{padding:.35rem .7rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:16px;color:var(--text-secondary);font-size:.75rem;font-family:inherit;cursor:pointer;transition:all .2s}
+.quick-reply:hover{border-color:var(--accent);color:var(--accent)}
+.typing-indicator{display:flex;gap:4px;padding:.5rem 0}
+.typing-indicator span{width:6px;height:6px;background:var(--text-muted);border-radius:50%;animation:ty 1.4s ease infinite}
+.typing-indicator span:nth-child(2){animation-delay:.2s}
+.typing-indicator span:nth-child(3){animation-delay:.4s}
+@keyframes ty{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+.chat-input{padding:.8rem;border-top:1px solid var(--border);background:var(--glass);backdrop-filter:blur(20px);display:flex;flex-direction:column;gap:.6rem;flex-shrink:0}
+.input-row-chat{display:flex;gap:.5rem;align-items:center}
+.chat-text-input{flex:1;padding:.7rem 1rem;background:var(--bg-input);border:1px solid var(--border);border-radius:24px;color:var(--text);font-family:inherit;font-size:.85rem;outline:none;transition:border-color .2s}
+.chat-text-input:focus{border-color:var(--accent)}
+.btn-voice{width:48px;height:48px;border-radius:50%;border:2px solid var(--accent);background:var(--accent-glow);color:var(--accent);font-size:1.2rem;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-voice:hover{background:var(--accent);color:var(--bg-deep)}
+.btn-voice.recording{background:var(--danger);border-color:var(--danger);color:#fff;animation:rp 1s ease infinite}
+@keyframes rp{0%,100%{box-shadow:0 0 0 0 rgba(255,71,87,.4)}50%{box-shadow:0 0 0 12px rgba(255,71,87,0)}}
+.btn-send{width:48px;height:48px;border-radius:50%;border:none;background:var(--accent);color:var(--bg-deep);font-size:1.1rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-send:hover{transform:scale(1.05)}
+.voice-status-bar{display:none;align-items:center;gap:.5rem;padding:.3rem .6rem;background:var(--danger-glow);border-radius:12px;font-size:.72rem;color:var(--danger)}
+.voice-status-bar.active{display:flex}
+.audio-bars{display:flex;align-items:center;gap:2px;height:16px}
+.audio-bars span{width:3px;background:var(--danger);border-radius:2px;animation:ab .6s ease infinite}
+.audio-bars span:nth-child(1){height:40%}.audio-bars span:nth-child(2){height:70%;animation-delay:.1s}.audio-bars span:nth-child(3){height:100%;animation-delay:.2s}.audio-bars span:nth-child(4){height:60%;animation-delay:.3s}.audio-bars span:nth-child(5){height:30%;animation-delay:.4s}
+@keyframes ab{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}
+.report-screen{flex:1;overflow-y:auto;padding:1rem}
+.report-header{text-align:center;padding:1.5rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1rem}
+.report-header h2{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:.3rem}
+.report-header p{font-size:.75rem;color:var(--text-muted)}
+.severity-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.4rem .8rem;border-radius:20px;font-size:.8rem;font-weight:700;margin-top:.8rem}
+.severity-1{background:rgba(0,212,170,.15);color:var(--accent)}.severity-2{background:rgba(255,207,0,.15);color:#ffcf00}.severity-3{background:rgba(255,165,2,.15);color:var(--warning)}.severity-4{background:var(--danger-glow);color:var(--danger)}.severity-5{background:rgba(200,0,0,.2);color:#ff2020}
+.report-section{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:1rem;margin-bottom:.8rem}
+.report-section-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.8rem;display:flex;align-items:center;gap:.4rem}
+.diagnosis-item{display:flex;align-items:center;gap:.8rem;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.diagnosis-item:last-child{border-bottom:none}
+.diag-rank{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.diag-rank-1{background:var(--accent-glow);color:var(--accent)}.diag-rank-2{background:var(--warning-glow);color:var(--warning)}.diag-rank-3{background:rgba(100,100,150,.15);color:var(--text-secondary)}
+.diag-info{flex:1}.diag-name{font-size:.85rem;font-weight:600}.diag-name-ar{font-size:.75rem;color:var(--text-secondary)}
+.diag-bar{width:60px;height:6px;background:var(--bg-deep);border-radius:3px;overflow:hidden}
+.diag-bar-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.diag-pct{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;min-width:40px;text-align:left}
+.symptom-list{display:flex;flex-wrap:wrap;gap:.4rem}
+.symptom-item{display:flex;align-items:center;gap:.3rem;padding:.3rem .7rem;background:var(--bg-deep);border:1px solid var(--border);border-radius:16px;font-size:.72rem}
+.symptom-intensity{font-family:'JetBrains Mono',monospace;font-size:.65rem;padding:.1rem .3rem;background:var(--accent-glow);color:var(--accent);border-radius:6px}
+.test-item{display:flex;align-items:center;gap:.5rem;padding:.5rem 0;font-size:.82rem}
+.test-icon{width:28px;height:28px;background:var(--accent-glow);color:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0}
+.report-actions{display:flex;gap:.5rem;margin-top:1rem;padding-bottom:2rem}
+.report-actions button{flex:1}
+.disclaimer{margin-top:.5rem;padding:.6rem .8rem;background:var(--warning-glow);border:1px solid rgba(255,165,2,.2);border-radius:var(--radius-xs);font-size:.7rem;color:var(--warning);line-height:1.5;text-align:center}
+.toast{position:fixed;bottom:-60px;left:50%;transform:translateX(-50%);padding:.6rem 1.2rem;background:var(--bg-elevated);border:1px solid var(--border);border-radius:20px;color:var(--text);font-size:.8rem;z-index:999;transition:bottom .3s ease}
+.toast.show{bottom:30px}
+.steps{display:flex;justify-content:center;gap:.5rem;padding:.6rem;flex-shrink:0}
+.step{display:flex;align-items:center;gap:.3rem;font-size:.65rem;color:var(--text-muted);padding:.25rem .6rem;border-radius:12px;border:1px solid var(--border)}
+.step.active{color:var(--accent);border-color:var(--accent);background:var(--accent-glow)}
+.step.done{color:var(--accent-dim);border-color:transparent;background:rgba(0,168,138,.1)}
+.config-section{padding:1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:1rem}
+.config-section h3{font-size:.8rem;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+.config-hint{font-size:.68rem;color:var(--text-muted);margin-top:.3rem;line-height:1.4}
+.mode-toggle{display:flex;background:var(--bg-deep);border-radius:var(--radius-xs);padding:3px;margin-bottom:.8rem}
+.mode-btn{flex:1;padding:.5rem;border:none;background:transparent;color:var(--text-muted);font-family:inherit;font-size:.75rem;font-weight:600;border-radius:5px;cursor:pointer;transition:all .2s}
+.mode-btn.active{background:var(--accent);color:var(--bg-deep)}
+@media(max-width:480px){.app{border:none}}
+@media print{.chat-input,.header-back,.steps,.config-section,.btn-primary,.btn-secondary{display:none!important}.app{max-width:100%;border:none}.report-screen{padding:0}}
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="steps">
+        <div class="step active" id="st1">① Patient</div>
+        <div class="step" id="st2">② Consultation</div>
+        <div class="step" id="st3">③ Rapport</div>
+    </div>
+
+    <!-- WELCOME -->
+    <div class="screen active" id="s-welcome">
+        <div class="welcome">
+            <div class="welcome-logo">🩺</div>
+            <h1>S.A.M.I.<span>Système d'Assistance Médicale Intelligent</span></h1>
+            <p class="welcome-desc">مساعد طبي ذكي بالدارجة المغربية<br>Pré-diagnostic IA bayésien pour les hôpitaux publics</p>
+            <div class="welcome-features">
+                <div class="feature-chip"><span class="icon">🗣️</span> Darija</div>
+                <div class="feature-chip"><span class="icon">🧠</span> ML Bayésien</div>
+                <div class="feature-chip"><span class="icon">🎙️</span> Voice AI</div>
+                <div class="feature-chip"><span class="icon">📋</span> Rapport Auto</div>
+            </div>
+            <button class="btn-primary" onclick="showScreen('s-patient')">بدا الاستشارة — Commencer</button>
+            <div class="config-section" style="width:100%;max-width:340px;margin-top:.5rem">
+                <h3>⚙️ Mode IA</h3>
+                <div class="mode-toggle">
+                    <button class="mode-btn active" onclick="setMode('local',this)">🧠 ML Local</button>
+                    <button class="mode-btn" onclick="setMode('ai',this)">🤖 IA Avancée</button>
+                </div>
+                <div id="ai-config" style="display:none">
+                    <input type="password" class="input-field" id="apiKeyInput" placeholder="🔑 Clé API (optionnel)" style="font-size:.78rem">
+                    <p class="config-hint">💡 Sans clé API serveur, entrez votre clé ici (elle reste dans votre navigateur, jamais envoyée à notre serveur).</p>
+                </div>
+                <p class="config-hint">🔒 Le moteur ML local fonctionne sans internet. Vos données restent sur votre appareil.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PATIENT -->
+    <div class="screen" id="s-patient">
+        <div class="header">
+            <button class="header-back" onclick="showScreen('s-welcome')">→</button>
+            <div class="header-info"><div class="header-title">Sélection Patient</div><div class="header-subtitle">اختيار المريض</div></div>
+        </div>
+        <div class="patient-screen">
+            <div class="section-label">Patients récents</div>
+            <div class="patient-cards" id="patientCards"></div>
+            <div class="divider">أو مريض جديد — ou nouveau patient</div>
+            <div class="input-group">
+                <input class="input-field" id="pName" placeholder="الاسم الكامل — Nom complet">
+                <div class="input-row">
+                    <input class="input-field" id="pAge" type="number" placeholder="العمر — Âge">
+                    <select class="input-field" id="pSex">
+                        <option value="">الجنس — Sexe</option>
+                        <option value="ذكر">ذكر — Masculin</option>
+                        <option value="أنثى">أنثى — Féminin</option>
+                    </select>
+                </div>
+                <input class="input-field" id="pId" placeholder="CIN / N° Dossier (optionnel)">
+            </div>
+            <button class="btn-primary" onclick="startConsultation()">ابدأ — Démarrer la consultation</button>
+        </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="screen" id="s-chat">
+        <div class="header">
+            <button class="header-back" onclick="confirmExit()">→</button>
+            <div class="header-info"><div class="header-title" id="chatPatientName">Patient</div><div class="header-subtitle" id="chatPatientMeta"></div></div>
+            <div class="header-badge"><span>LIVE</span></div>
+        </div>
+        <div class="chat-container" id="chatBox"></div>
+        <div class="chat-input">
+            <div class="voice-status-bar" id="voiceStatus">
+                <div class="audio-bars"><span></span><span></span><span></span><span></span><span></span></div>
+                <span>كتسجل... — Enregistrement</span>
+            </div>
+            <div class="input-row-chat">
+                <input class="chat-text-input" id="chatInput" placeholder="اكتب الأعراض... Décrivez les symptômes" onkeydown="if(event.key==='Enter')sendMessage()">
+                <button class="btn-voice" id="btnVoice" onclick="toggleVoice()">🎙️</button>
+                <button class="btn-send" onclick="sendMessage()">↑</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REPORT -->
+    <div class="screen" id="s-report">
+        <div class="header">
+            <button class="header-back" onclick="showScreen('s-chat')">→</button>
+            <div class="header-info"><div class="header-title">Rapport Médical</div><div class="header-subtitle">التقرير الطبي</div></div>
+        </div>
+        <div class="report-screen" id="reportContent"></div>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// MEDICAL DATABASE
+// ══════════════════════════════════════════
+const SYMPTOMS={fievre:{fr:'Fièvre',ar:'سخانة',cat:'general'},toux:{fr:'Toux',ar:'كحة',cat:'respiratoire'},mal_tete:{fr:'Céphalées',ar:'صداع',cat:'neurologique'},fatigue:{fr:'Fatigue',ar:'عيان',cat:'general'},douleur_gorge:{fr:'Mal de gorge',ar:'حلقي كيحرق',cat:'orl'},nez_coule:{fr:'Rhinorrhée',ar:'نيفي كيسيل',cat:'orl'},courbatures:{fr:'Myalgies',ar:'جسمي كيوجعني',cat:'general'},nausees:{fr:'Nausées',ar:'غادي نتقيا',cat:'digestif'},vomissements:{fr:'Vomissements',ar:'تقيا',cat:'digestif'},diarrhee:{fr:'Diarrhée',ar:'إسهال',cat:'digestif'},douleur_abdominale:{fr:'Douleur abdominale',ar:'كرشي كتوجعني',cat:'digestif'},douleur_estomac:{fr:'Douleur épigastrique',ar:'معدتي',cat:'digestif'},difficultes_respiratoires:{fr:'Dyspnée',ar:'كنلهث',cat:'respiratoire'},perte_odorat:{fr:'Anosmie',ar:'ماكنشمش',cat:'orl'},perte_gout:{fr:'Agueusie',ar:'ماكنحسش بالذوق',cat:'orl'},douleur_poitrine:{fr:'Douleur thoracique',ar:'صدري كيحرق',cat:'cardiaque'},expectorations:{fr:'Expectorations',ar:'بلغم',cat:'respiratoire'},eternuements:{fr:'Éternuements',ar:'كنعطس',cat:'orl'},vertiges:{fr:'Vertiges',ar:'كندوخ',cat:'neurologique'},demangeaisons:{fr:'Prurit',ar:'كنحك',cat:'dermatologique'},douleur_oreille:{fr:'Otalgie',ar:'ودني كتوجعني',cat:'orl'},brulure_miction:{fr:'Brûlure mictionnelle',ar:'كيحرقني البول',cat:'urinaire'},yeux_rouges:{fr:'Yeux rouges',ar:'عيني حمرين',cat:'ophtalmologique'},frissons:{fr:'Frissons',ar:'كنرجف',cat:'general'},transpiration:{fr:'Sudation',ar:'كنعرق بزاف',cat:'general'},eruption:{fr:'Éruption cutanée',ar:'حبوب',cat:'dermatologique'},douleur_articulaire:{fr:'Arthralgie',ar:'مفاصلي',cat:'rhumatologique'},palpitations:{fr:'Palpitations',ar:'قلبي كيدق بزاف',cat:'cardiaque'},confusion:{fr:'Confusion',ar:'مامفاهمش',cat:'neurologique'},perte_appetit:{fr:'Anorexie',ar:'مابغيتش ناكل',cat:'general'},constipation:{fr:'Constipation',ar:'ماكنمشيش',cat:'digestif'},insomnie:{fr:'Insomnie',ar:'مكنعسش',cat:'neurologique'},toux_sang:{fr:'Hémoptysie',ar:'كنكحّ الدم',cat:'respiratoire'},sang_selles:{fr:'Rectorragie',ar:'الدم مع البراز',cat:'digestif'},oedeme:{fr:'Œdème',ar:'رجليّ منفخين',cat:'cardiaque'}};
+
+const DISEASES={grippe:{fr:'Grippe',ar:'گريب',symptoms:{fievre:.95,toux:.8,courbatures:.9,mal_tete:.7,fatigue:.85,frissons:.8,douleur_gorge:.4,nez_coule:.3},tests:['NFS','Test rapide Grippe','PCR Influenza'],urgency:'low',prevalence:.15},rhume:{fr:'Rhume',ar:'برد',symptoms:{nez_coule:.95,eternuements:.9,douleur_gorge:.7,toux:.5,fatigue:.4,mal_tete:.3},tests:['Aucun test nécessaire'],urgency:'low',prevalence:.2},covid19:{fr:'COVID-19',ar:'كوفيد',symptoms:{fievre:.85,toux:.75,fatigue:.8,perte_odorat:.7,perte_gout:.65,courbatures:.6,difficultes_respiratoires:.4,mal_tete:.5},tests:['PCR SARS-CoV-2','Test antigénique','Scanner thoracique'],urgency:'medium',prevalence:.05},angine:{fr:'Angine',ar:'أنجين',symptoms:{douleur_gorge:.95,fievre:.8,mal_tete:.5,fatigue:.6,douleur_oreille:.3},tests:['TDR Streptocoque','NFS','CRP'],urgency:'low',prevalence:.1},bronchite:{fr:'Bronchite aiguë',ar:'برونشيت',symptoms:{toux:.95,expectorations:.85,fievre:.5,fatigue:.6,douleur_poitrine:.4,difficultes_respiratoires:.3},tests:['Radiographie thoracique','NFS','CRP'],urgency:'low',prevalence:.08},pneumonie:{fr:'Pneumonie',ar:'التهاب الرئة',symptoms:{fievre:.9,toux:.85,difficultes_respiratoires:.8,expectorations:.7,douleur_poitrine:.65,fatigue:.8,frissons:.7},tests:['Radiographie thoracique','NFS','CRP','Hémocultures','Scanner thoracique'],urgency:'high',prevalence:.04},gastroenterite:{fr:'Gastro-entérite',ar:'گاسترو',symptoms:{diarrhee:.95,nausees:.85,vomissements:.8,douleur_abdominale:.75,fievre:.5,fatigue:.6},tests:['Coproculture','Ionogramme','NFS'],urgency:'low',prevalence:.12},ulcere:{fr:'Ulcère gastrique',ar:'قرحة المعدة',symptoms:{douleur_estomac:.9,nausees:.6,vomissements:.4,perte_appetit:.7,sang_selles:.3},tests:['FOGD','Test H. pylori','NFS'],urgency:'medium',prevalence:.03},migraine:{fr:'Migraine',ar:'شقيقة',symptoms:{mal_tete:.95,nausees:.6,vertiges:.5,yeux_rouges:.3,fatigue:.4},tests:['Examen neurologique','IRM cérébrale'],urgency:'low',prevalence:.08},hypertension:{fr:'Crise hypertensive',ar:'الضغط طالع',symptoms:{mal_tete:.8,vertiges:.75,palpitations:.6,douleur_poitrine:.4,yeux_rouges:.3,confusion:.25},tests:['Mesure TA','ECG','Bilan rénal'],urgency:'high',prevalence:.06},infection_urinaire:{fr:'Infection urinaire',ar:'التهاب البول',symptoms:{brulure_miction:.95,fievre:.5,douleur_abdominale:.6,frissons:.35},tests:['ECBU','Bandelette urinaire','NFS'],urgency:'medium',prevalence:.07},sinusite:{fr:'Sinusite',ar:'سينوزيت',symptoms:{mal_tete:.85,nez_coule:.8,fievre:.4,douleur_oreille:.5,toux:.3},tests:['Radiographie sinus','Scanner facial'],urgency:'low',prevalence:.06},otite:{fr:'Otite moyenne',ar:'التهاب الودن',symptoms:{douleur_oreille:.95,fievre:.7,vertiges:.4,mal_tete:.3},tests:['Otoscopie','Tympanométrie'],urgency:'low',prevalence:.05},conjonctivite:{fr:'Conjonctivite',ar:'التهاب العين',symptoms:{yeux_rouges:.95,demangeaisons:.7,mal_tete:.2},tests:['Examen ophtalmologique'],urgency:'low',prevalence:.04},allergie:{fr:'Réaction allergique',ar:'حساسية',symptoms:{eternuements:.85,nez_coule:.8,demangeaisons:.75,yeux_rouges:.6,eruption:.5,toux:.3},tests:['IgE totales','Prick tests','NFS'],urgency:'low',prevalence:.08},appendicite:{fr:'Appendicite',ar:'الزائدة الدودية',symptoms:{douleur_abdominale:.95,nausees:.7,vomissements:.6,fievre:.65,perte_appetit:.8},tests:['Échographie abdominale','NFS','CRP','Scanner abdominal'],urgency:'high',prevalence:.02},diabete_decompense:{fr:'Diabète décompensé',ar:'السكري طالع',symptoms:{fatigue:.85,transpiration:.6,vertiges:.7,nausees:.5,confusion:.4,perte_appetit:.3},tests:['Glycémie','HbA1c','Ionogramme'],urgency:'high',prevalence:.03},insuffisance_cardiaque:{fr:'Insuffisance cardiaque',ar:'ضعف القلب',symptoms:{difficultes_respiratoires:.9,oedeme:.85,fatigue:.8,palpitations:.6,toux:.4,douleur_poitrine:.35},tests:['ECG','BNP/NT-proBNP','Échocardiographie'],urgency:'high',prevalence:.02},paludisme:{fr:'Paludisme',ar:'الملاريا',symptoms:{fievre:.95,frissons:.9,transpiration:.85,mal_tete:.7,courbatures:.65,nausees:.5,fatigue:.8},tests:['Goutte épaisse','Frottis sanguin','TDR Paludisme'],urgency:'high',prevalence:.02},tuberculose:{fr:'Tuberculose',ar:'السل',symptoms:{toux:.9,fievre:.7,transpiration:.8,fatigue:.85,perte_appetit:.7,toux_sang:.4,expectorations:.6},tests:['IDR tuberculine','QuantiFERON','BAAR crachats','Radiographie thoracique'],urgency:'high',prevalence:.01}};
+
+const KEYWORDS={'سخانة':'fievre','سخونة':'fievre','حمى':'fievre','fièvre':'fievre','fever':'fievre','حرارة':'fievre','كحة':'toux','سعال':'toux','toux':'toux','كنكح':'toux','cough':'toux','راسي':'mal_tete','صداع':'mal_tete','tête':'mal_tete','headache':'mal_tete','عيان':'fatigue','تعب':'fatigue','fatigué':'fatigue','مقدرش':'fatigue','tired':'fatigue','حلقي':'douleur_gorge','حنجرة':'douleur_gorge','gorge':'douleur_gorge','زور':'douleur_gorge','نيفي':'nez_coule','أنف':'nez_coule','nez':'nez_coule','جسمي':'courbatures','عظامي':'courbatures','courbatures':'courbatures','بدني':'courbatures','غادي نتقيا':'nausees','غثيان':'nausees','nausée':'nausees','تقيا':'vomissements','قيء':'vomissements','vomis':'vomissements','إسهال':'diarrhee','diarrhée':'diarrhee','كرشي':'douleur_abdominale','بطن':'douleur_abdominale','ventre':'douleur_abdominale','معدتي':'douleur_estomac','estomac':'douleur_estomac','كنلهث':'difficultes_respiratoires','تنفس':'difficultes_respiratoires','respir':'difficultes_respiratoires','ماكنشمش':'perte_odorat','odorat':'perte_odorat','ذوق':'perte_gout','goût':'perte_gout','صدري':'douleur_poitrine','poitrine':'douleur_poitrine','بلغم':'expectorations','كنعطس':'eternuements','éternue':'eternuements','كندوخ':'vertiges','vertige':'vertiges','دوخة':'vertiges','كنحك':'demangeaisons','démange':'demangeaisons','حكة':'demangeaisons','ودني':'douleur_oreille','oreille':'douleur_oreille','بول':'brulure_miction','urine':'brulure_miction','كيحرقني البول':'brulure_miction','عيني':'yeux_rouges','yeux':'yeux_rouges','كنرجف':'frissons','froid':'frissons','كنعرق':'transpiration','عرق':'transpiration','حبوب':'eruption','boutons':'eruption','مفاصلي':'douleur_articulaire','articulation':'douleur_articulaire','قلبي كيدق':'palpitations','palpitation':'palpitations','مامفاهمش':'confusion','confus':'confusion','مابغيتش ناكل':'perte_appetit','appétit':'perte_appetit','ماكنمشيش':'constipation','constipé':'constipation','مكنعسش':'insomnie','insomnie':'insomnie','دم':'toux_sang','sang':'toux_sang','منفخين':'oedeme','gonflé':'oedeme'};
+
+const INTENSITY_MAP={'بزاف':9,'شديد':9,'très':8,'beaucoup':8,'fort':8,'شوية':3,'قليل':3,'peu':3,'légèrement':2,'معتدل':5,'moyen':5,'modéré':5};
+
+// ══════════════════════════════════════════
+// BAYESIAN DIAGNOSTIC ENGINE
+// ══════════════════════════════════════════
+class DiagnosticEngine{
+    constructor(){this.reset()}
+    reset(){this.symptoms=[];this.absent=[];this.probs={};for(let d in DISEASES)this.probs[d]=DISEASES[d].prevalence||.05;this._norm()}
+    _norm(){const s=Object.values(this.probs).reduce((a,b)=>a+b,0);if(s>0)for(let d in this.probs)this.probs[d]/=s}
+    addSymptom(code,present=true,intensity=5){
+        if(present){if(!this.symptoms.find(s=>s.code===code))this.symptoms.push({code,intensity})}
+        else{if(!this.absent.includes(code))this.absent.push(code)}
+        this._bayesUpdate()
+    }
+    _bayesUpdate(){
+        for(let d in DISEASES)this.probs[d]=DISEASES[d].prevalence||.05;
+        this._norm();
+        for(let s of this.symptoms){
+            for(let d in DISEASES){
+                const p=DISEASES[d].symptoms[s.code]||.02;
+                this.probs[d]*=p*(.5+.5*(s.intensity/10))
+            }
+            this._norm()
+        }
+        for(let code of this.absent){
+            for(let d in DISEASES){
+                const p=DISEASES[d].symptoms[code]||0;
+                if(p>.5)this.probs[d]*=(1-p*.6)
+            }
+            this._norm()
+        }
+    }
+    getTop(n=5){return Object.entries(this.probs).map(([id,prob])=>({id,prob,name_fr:DISEASES[id].fr,name_ar:DISEASES[id].ar,urgency:DISEASES[id].urgency,tests:DISEASES[id].tests})).sort((a,b)=>b.prob-a.prob).slice(0,n)}
+    getNextQuestion(){
+        const top5=this.getTop(5);const cands=new Map();
+        for(let diag of top5)for(let[sym,prob]of Object.entries(DISEASES[diag.id].symptoms))
+            if(!this.symptoms.find(s=>s.code===sym)&&!this.absent.includes(sym)&&prob>.3)
+                cands.set(sym,(cands.get(sym)||0)+prob*diag.prob);
+        if(!cands.size)return null;
+        const best=[...cands.entries()].sort((a,b)=>b[1]-a[1])[0][0];
+        const info=SYMPTOMS[best];
+        return{code:best,question_ar:`واش عندك ${info.ar}؟`,question_fr:`Avez-vous ${info.fr.toLowerCase()} ?`}
+    }
+    getSeverity(){
+        const top=this.getTop(1)[0];let sev=1;
+        if(top){const m={low:1,medium:3,high:4};sev=m[top.urgency]||2}
+        if(this.symptoms.some(s=>['douleur_poitrine','difficultes_respiratoires','toux_sang','confusion'].includes(s.code)))sev=Math.max(sev,4);
+        if(this.symptoms.filter(s=>s.intensity>=7).length>=3)sev=Math.min(5,sev+1);
+        return Math.max(1,Math.min(5,sev))
+    }
+    getTests(){const t=new Set();this.getTop(3).forEach(d=>d.tests.forEach(x=>t.add(x)));return[...t]}
+    getReport(){
+        const top=this.getTop(5),sev=this.getSeverity();
+        const sl={1:{fr:'Faible',ar:'منخفض',icon:'✅',color:'severity-1'},2:{fr:'Modéré',ar:'متوسط',icon:'🟡',color:'severity-2'},3:{fr:'Modéré-Élevé',ar:'متوسط-مرتفع',icon:'🟠',color:'severity-3'},4:{fr:'Élevé',ar:'مرتفع',icon:'🔴',color:'severity-4'},5:{fr:'Critique',ar:'حرج',icon:'⛔',color:'severity-5'}};
+        return{symptoms:this.symptoms.map(s=>({code:s.code,name_fr:SYMPTOMS[s.code]?.fr||s.code,name_ar:SYMPTOMS[s.code]?.ar||'',intensity:s.intensity})),diagnoses:top,tests:this.getTests(),severity:{score:sev,...sl[sev]},questionCount:this.symptoms.length+this.absent.length}
+    }
+}
+
+function extractSymptoms(text){
+    const lower=text.toLowerCase();const detected=[];let intensity=5;
+    for(let[w,v]of Object.entries(INTENSITY_MAP))if(lower.includes(w)){intensity=v;break}
+    for(let[kw,code]of Object.entries(KEYWORDS))if(lower.includes(kw.toLowerCase())&&!detected.find(s=>s.code===code))detected.push({code,intensity});
+    return detected
+}
+
+// ══════════════════════════════════════════
+// APP STATE
+// ══════════════════════════════════════════
+let engine=new DiagnosticEngine(),mode='local',patient=null,conversationTurn=0,maxQuestions=8;
+let mediaRecorder,audioChunks=[],isRecording=false;
+const demoPatients=[{id:'AB123456',name:'فاطمة العلوي',age:54,sex:'أنثى',init:'FA'},{id:'CD789012',name:'محمد البناني',age:35,sex:'ذكر',init:'MB'},{id:'EF345678',name:'عائشة التازي',age:67,sex:'أنثى',init:'AT'}];
+const $=id=>document.getElementById(id);
+const screens=['s-welcome','s-patient','s-chat','s-report'];
+
+function showScreen(id){screens.forEach(s=>$(s).classList.toggle('active',s===id));const m={'s-welcome':0,'s-patient':1,'s-chat':2,'s-report':3},step=m[id]||0;$('st1').className=step>=1?(step>1?'step done':'step active'):'step';$('st2').className=step>=2?(step>2?'step done':'step active'):'step';$('st3').className=step>=3?'step active':'step'}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+function setMode(m,btn){mode=m;document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');$('ai-config').style.display=m==='ai'?'block':'none'}
+function delay(ms){return new Promise(r=>setTimeout(r,ms))}
+
+function renderPatients(){$('patientCards').innerHTML=demoPatients.map(p=>`<div class="patient-card" onclick="selectPatient('${p.id}',this)"><div class="patient-avatar">${p.init}</div><div class="patient-info"><div class="patient-name">${p.name}</div><div class="patient-meta">${p.sex} · ${p.age} سنة · ${p.id}</div></div></div>`).join('')}
+
+function selectPatient(id,el){patient=demoPatients.find(x=>x.id===id);document.querySelectorAll('.patient-card').forEach(c=>c.classList.remove('selected'));el.classList.add('selected')}
+
+function startConsultation(){
+    if(!patient){const name=$('pName').value.trim(),age=$('pAge').value,sex=$('pSex').value;if(!name){toast('⚠️ أدخل اسم المريض');return}patient={name,age:age||'?',sex:sex||'?',id:'NEW-'+Date.now(),init:name.slice(0,2).toUpperCase()}}
+    engine.reset();conversationTurn=0;$('chatBox').innerHTML='';$('chatPatientName').textContent=patient.name;$('chatPatientMeta').textContent=`${patient.sex} · ${patient.age} سنة`;showScreen('s-chat');
+    setTimeout(()=>addBotMessage(`مرحبا ${patient.name}، أنا سامي المساعد الطبي الذكي. أش كيوجعك اليوم؟`,`Bonjour ${patient.name}, je suis S.A.M.I. Quels symptômes ressentez-vous ?`),500)
+}
+
+function confirmExit(){if(engine.symptoms.length>0){if(confirm('Quitter ? Les données seront perdues.'))showScreen('s-patient')}else showScreen('s-patient')}
+
+function addBotMessage(ar,fr,extras=''){const d=document.createElement('div');d.className='msg msg-bot';d.innerHTML=`<div class="msg-sender">🤖 S.A.M.I.</div><div class="msg-bubble"><div class="msg-darija">${ar}</div><div class="msg-translation">${fr}</div>${extras}</div>`;$('chatBox').appendChild(d);$('chatBox').scrollTop=$('chatBox').scrollHeight}
+function addUserMessage(t){const d=document.createElement('div');d.className='msg msg-user';d.innerHTML=`<div class="msg-sender">🗣️ Patient</div><div class="msg-bubble">${t}</div>`;$('chatBox').appendChild(d);$('chatBox').scrollTop=$('chatBox').scrollHeight}
+function addTyping(){const d=document.createElement('div');d.className='msg msg-bot';d.id='typing';d.innerHTML='<div class="msg-bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>';$('chatBox').appendChild(d);$('chatBox').scrollTop=$('chatBox').scrollHeight}
+function removeTyping(){const t=$('typing');if(t)t.remove()}
+
+async function sendMessage(){
+    const input=$('chatInput'),text=input.value.trim();if(!text)return;
+    input.value='';addUserMessage(text);conversationTurn++;
+    const detected=extractSymptoms(text);
+    const lower=text.toLowerCase();
+    const isYes=['نعم','أه','إيه','واه','oui','yes','ah','wah'].some(w=>lower.includes(w));
+    const isNo=['لا','la','non','no','ماشي'].some(w=>lower.includes(w));
+
+    if(detected.length>0){
+        detected.forEach(s=>engine.addSymptom(s.code,true,s.intensity));
+        const tags=detected.map(s=>{const i=SYMPTOMS[s.code];return`<span class="symptom-tag">${i?.ar||s.code} (${i?.fr||s.code})</span>`}).join('');
+        addTyping();await delay(800);removeTyping();
+        addBotMessage('شكرا، فهمت. لقيت هاد الأعراض:','Merci. Symptômes détectés :',`<div class="msg-symptoms">${tags}</div>`);
+        await delay(600)
+    }else if(isYes&&window._pq){engine.addSymptom(window._pq,true,5);window._pq=null}
+    else if(isNo&&window._pq){engine.addSymptom(window._pq,false);window._pq=null}
+
+    addTyping();await delay(1000);removeTyping();
+
+    if(engine.symptoms.length>=2&&conversationTurn>=maxQuestions){generateReport();return}
+    if(engine.symptoms.length>=1){
+        const nq=engine.getNextQuestion();
+        if(nq&&conversationTurn<maxQuestions){
+            window._pq=nq.code;
+            addBotMessage(nq.question_ar,nq.question_fr,`<div class="msg-quick-replies"><button class="quick-reply" onclick="qr('نعم')">✅ نعم / Oui</button><button class="quick-reply" onclick="qr('لا')">❌ لا / Non</button><button class="quick-reply" onclick="qr('شوية')">🤏 شوية / Un peu</button></div>`)
+        }else{generateReport();return}
+    }else{
+        if(mode==='ai'){await callAI(text)}
+        else addBotMessage('عفاك وصف لي الأعراض ديالك بالتفصيل. مثلا: عندي سخانة وكحة وراسي كيوجعني','Décrivez vos symptômes en détail. Ex: j\'ai de la fièvre, de la toux et des maux de tête')
+    }
+
+    if(engine.symptoms.length>=4&&engine.getTop(1)[0]?.prob>.3){
+        addBotMessage('عندي معلومات كافية. بغيتي نكملو ولا نشوف النتيجة؟','J\'ai assez d\'informations. Continuer ou voir les résultats ?',`<div class="msg-quick-replies"><button class="quick-reply" onclick="generateReport()">📋 شوف التقرير</button><button class="quick-reply" onclick="toast('كمل...')">🔄 كمل</button></div>`)
+    }
+}
+
+function qr(t){$('chatInput').value=t;sendMessage()}
+
+async function callAI(userText){
+    const key=$('apiKeyInput')?.value?.trim();
+    if(!key)return addBotMessage('عفاك وصف لي الأعراض ديالك. مثلا: سخانة، كحة، راسي كيوجعني...','Décrivez vos symptômes. Ex: fièvre, toux, maux de tête...');
+    try{
+        const sys=`Tu es S.A.M.I., assistant médical IA dans un hôpital marocain. Parle en DARIJA. Patient: ${patient.name}, ${patient.age} ans. Symptômes: ${engine.symptoms.map(s=>SYMPTOMS[s.code]?.fr).join(', ')||'aucun'}. Réponds: [darija]|||[français]. Pose UNE question.`;
+        const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:userText,systemPrompt:sys})});
+        if(!res.ok)throw new Error();
+        const data=await res.json();const parts=data.reply.split('|||');
+        addBotMessage(parts[0]?.trim()||data.reply,parts[1]?.trim()||'')
+    }catch{addBotMessage('عفاك وصف لي الأعراض ديالك...','Décrivez vos symptômes...')}
+}
+
+// VOICE
+async function toggleVoice(){isRecording?stopRec():startRec()}
+async function startRec(){
+    try{
+        const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+        mediaRecorder=new MediaRecorder(stream);audioChunks=[];
+        mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
+        mediaRecorder.onstop=async()=>{stream.getTracks().forEach(t=>t.stop());const blob=new Blob(audioChunks,{type:'audio/webm'});processAudio(blob)};
+        mediaRecorder.start();isRecording=true;$('btnVoice').classList.add('recording');$('voiceStatus').classList.add('active');$('btnVoice').textContent='⏹️';
+        setTimeout(()=>{if(isRecording)stopRec()},15000)
+    }catch{toast('⚠️ Erreur microphone')}
+}
+function stopRec(){if(mediaRecorder?.state==='recording')mediaRecorder.stop();isRecording=false;$('btnVoice').classList.remove('recording');$('voiceStatus').classList.remove('active');$('btnVoice').textContent='🎙️'}
+
+async function processAudio(blob){
+    // Try browser Speech Recognition (works without API)
+    if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){
+        const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+        const r=new SR();r.lang='ar-MA';r.interimResults=false;
+        r.onresult=e=>{$('chatInput').value=e.results[0][0].transcript;sendMessage()};
+        r.onerror=()=>toast('⚠️ ماقدرتش نفهم — Réessayez');
+        r.start()
+    }else toast('⚠️ Speech recognition non supporté')
+}
+
+// REPORT
+function generateReport(){
+    const r=engine.getReport(),ts=new Date().toLocaleString('fr-FR');
+    $('reportContent').innerHTML=`
+        <div class="report-header"><h2>📋 Rapport Pré-Diagnostic</h2><p>${patient.name} · ${patient.age} سنة · ${patient.sex}</p><p style="font-size:.65rem;margin-top:.2rem">${ts} · ${r.questionCount} questions</p><div class="severity-badge ${r.severity.color}">${r.severity.icon} Sévérité: ${r.severity.fr} — ${r.severity.ar}</div></div>
+        <div class="report-section"><div class="report-section-title">🩺 Diagnostics probables</div>${r.diagnoses.map((d,i)=>`<div class="diagnosis-item"><div class="diag-rank diag-rank-${Math.min(i+1,3)}">${i+1}</div><div class="diag-info"><div class="diag-name">${d.name_fr}</div><div class="diag-name-ar">${d.name_ar}</div></div><div class="diag-bar"><div class="diag-bar-fill" style="width:${Math.round(d.prob*100)}%;background:${i===0?'var(--accent)':i===1?'var(--warning)':'var(--text-muted)'}"></div></div><div class="diag-pct" style="color:${i===0?'var(--accent)':i===1?'var(--warning)':'var(--text-muted)'}">${Math.round(d.prob*100)}%</div></div>`).join('')}</div>
+        <div class="report-section"><div class="report-section-title">🔍 Symptômes détectés</div><div class="symptom-list">${r.symptoms.map(s=>`<div class="symptom-item"><span>${s.name_ar}</span><span style="color:var(--text-muted)">${s.name_fr}</span><span class="symptom-intensity">${s.intensity}/10</span></div>`).join('')}</div></div>
+        <div class="report-section"><div class="report-section-title">🧪 Examens recommandés</div>${r.tests.map(t=>`<div class="test-item"><div class="test-icon">🔬</div><span>${t}</span></div>`).join('')}</div>
+        <div class="disclaimer">⚠️ هذا تقرير أولي من نظام ذكاء اصطناعي ولا يعوض الفحص الطبي<br>Ce rapport est un pré-diagnostic IA et ne remplace pas une consultation médicale.</div>
+        <div class="report-actions"><button class="btn-primary" onclick="window.print()">🖨️ طبع — Imprimer</button><button class="btn-secondary" onclick="newConsult()">🔄 جديد — Nouveau</button></div>`;
+    showScreen('s-report')
+}
+
+function newConsult(){patient=null;engine.reset();conversationTurn=0;document.querySelectorAll('.patient-card').forEach(c=>c.classList.remove('selected'));$('pName').value='';$('pAge').value='';$('pSex').value='';showScreen('s-patient')}
+
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{renderPatients();if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})});
+</script>
+</body>
+</html>
